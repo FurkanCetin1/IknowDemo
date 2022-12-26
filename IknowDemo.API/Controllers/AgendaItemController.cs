@@ -1,4 +1,5 @@
-﻿using IknowDemo.Business.Abstract;
+﻿using Azure.Identity;
+using IknowDemo.Business.Abstract;
 using IknowDemo.Business.Concrete;
 using IknowDemo.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -44,5 +45,7 @@ namespace IknowDemo.API.Controllers
         {
             _agendaItemService.DeleteAgendaItem(id);
         }
+
+        
     }
 }

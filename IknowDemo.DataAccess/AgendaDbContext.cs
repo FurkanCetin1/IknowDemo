@@ -17,5 +17,6 @@ namespace IknowDemo.DataAccess
         }
 
         public DbSet<AgendaItem> AgendaItems{ get; set; }
+        public DbSet<UserCred> UserCreds { get; set; }
     }
 }

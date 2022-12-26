@@ -2,7 +2,10 @@
 using IknowDemo.Business.Concrete;
 using IknowDemo.DataAccess.Abstract;
 using IknowDemo.DataAccess.Concrete;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace IknowDemo.API
 {
@@ -22,6 +25,24 @@ namespace IknowDemo.API
             services.AddSingleton<IAgendaItemService, AgendaItemManager>();
             services.AddSingleton<IAgendaItemRepository, AgendaItemRepository>();
             services.AddRazorPages();
+            var key = "Trial";
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey= true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                    ValidateIssuer = false,
+                    ValidateAudience= false
+                };
+            });
+            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
         }
         public void Configure(WebApplication app, IWebHostEnvironment env)
         {
@@ -33,12 +54,14 @@ namespace IknowDemo.API
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            app.UseAuthorization();
             app.MapRazorPages();
             app.Run();
         }
